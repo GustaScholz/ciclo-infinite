@@ -1,8 +1,7 @@
 import { X } from "lucide-react";
+import { MENU_CATEGORIES } from "../../data/categories";
 
 function Sidebar({ menuOpen, setMenuOpen, onCategorySelect }) {
-  const categorias = ["Novidades", "Camisetas", "Moletons", "Calças", "Bermudas", "Tênis", "Bonés", "Acessórios", "Promoções"];
-
   function handleClick(categoria) {
     onCategorySelect(categoria);
     setMenuOpen(false);
@@ -17,7 +16,7 @@ function Sidebar({ menuOpen, setMenuOpen, onCategorySelect }) {
           <button onClick={() => setMenuOpen(false)} className="hover:opacity-60 transition"><X size={26} /></button>
         </div>
         <nav className="flex flex-col py-4">
-          {categorias.map((categoria) => <button key={categoria} onClick={() => handleClick(categoria)} className="text-left px-6 py-4 hover:bg-zinc-100 transition text-[15px]">{categoria}</button>)}
+          {MENU_CATEGORIES.map((categoria) => <button key={categoria} onClick={() => handleClick(categoria)} className="text-left px-6 py-4 hover:bg-zinc-100 transition text-[15px]">{categoria}</button>)}
         </nav>
       </aside>
     </>
