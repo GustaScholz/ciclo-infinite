@@ -30,7 +30,7 @@ async function github(path, token, options = {}) {
 
 function assetUrl(path) {
   if (!path) return "";
-  if (/^https?:\/\//i.test(path)) return path;
+  if (/^(https?:\/\/|blob:|data:)/i.test(path)) return path;
   return `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 }
 
@@ -39,6 +39,7 @@ function AdminBanners({ token }) {
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [localPreviews, setLocalPreviews] = useState({});
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/banners.json?t=${Date.now()}`, { cache: "no-store" })
@@ -46,6 +47,12 @@ function AdminBanners({ token }) {
       .then((data) => setBanners(Array.isArray(data) ? data : []))
       .catch((error) => setStatus(error.message));
   }, []);
+
+  useEffect(() => () => {
+    Object.values(localPreviews).forEach((url) => {
+      if (String(url).startsWith("blob:")) URL.revokeObjectURL(url);
+    });
+  }, [localPreviews]);
 
   function updateBanner(index, field, value) {
     setBanners((current) => current.map((banner, bannerIndex) => bannerIndex === index ? { ...banner, [field]: value } : banner));
@@ -65,6 +72,17 @@ function AdminBanners({ token }) {
 
   function removeBanner(index) {
     if (!window.confirm("Remover este banner do carrossel?")) return;
+    const preview = localPreviews[index];
+    if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
+    setLocalPreviews((current) => {
+      const next = {};
+      Object.entries(current).forEach(([key, value]) => {
+        const numericKey = Number(key);
+        if (numericKey < index) next[numericKey] = value;
+        if (numericKey > index) next[numericKey - 1] = value;
+      });
+      return next;
+    });
     setBanners((current) => current.filter((_, bannerIndex) => bannerIndex !== index));
     setDirty(true);
   }
@@ -76,6 +94,11 @@ function AdminBanners({ token }) {
     }
     if (!file) return;
 
+    const previousPreview = localPreviews[index];
+    if (previousPreview?.startsWith("blob:")) URL.revokeObjectURL(previousPreview);
+    const previewUrl = URL.createObjectURL(file);
+    setLocalPreviews((current) => ({ ...current, [index]: previewUrl }));
+
     setBusy(true);
     setStatus("Enviando imagem do banner...");
     try {
@@ -85,7 +108,8 @@ function AdminBanners({ token }) {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9-_]+/g, "-")
-        .toLowerCase();
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase() || "banner";
       const filename = `${Date.now()}-${safeName}.${extension}`;
       const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -101,7 +125,7 @@ function AdminBanners({ token }) {
       });
 
       updateBanner(index, "image", `images/banners-admin/${filename}`);
-      setStatus("Imagem enviada. Clique em “Publicar banners” para aplicar no carrossel.");
+      setStatus("Imagem enviada com sucesso. O preview já está disponível; clique em “Publicar banners” para atualizar o carrossel.");
     } catch (error) {
       setStatus(`Erro ao enviar imagem: ${error.message}`);
     } finally {
@@ -159,42 +183,46 @@ function AdminBanners({ token }) {
       {status && <div className="mb-6 rounded-2xl bg-zinc-900 text-white px-5 py-4 text-sm">{status}</div>}
 
       <div className="space-y-6">
-        {banners.map((banner, index) => (
-          <article key={banner.id ?? index} className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
-            <div className="flex items-center justify-between gap-4 mb-5">
-              <div>
-                <p className="text-xs uppercase tracking-[3px] text-zinc-500">Slide {index + 1}</p>
-                <h3 className="text-xl font-black mt-1">{banner.title || "Sem título"}</h3>
+        {banners.map((banner, index) => {
+          const previewImage = localPreviews[index] || assetUrl(banner.image);
+          return (
+            <article key={banner.id ?? index} className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-4 mb-5">
+                <div>
+                  <p className="text-xs uppercase tracking-[3px] text-zinc-500">Slide {index + 1}</p>
+                  <h3 className="text-xl font-black mt-1">{banner.title || "Sem título"}</h3>
+                </div>
+                <button onClick={() => removeBanner(index)} className="w-10 h-10 rounded-full bg-red-50 text-red-600 grid place-items-center" title="Remover banner"><Trash2 size={18} /></button>
               </div>
-              <button onClick={() => removeBanner(index)} className="w-10 h-10 rounded-full bg-red-50 text-red-600 grid place-items-center" title="Remover banner"><Trash2 size={18} /></button>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-6">
-              <div>
-                <div className="relative aspect-[16/7] bg-zinc-200 rounded-2xl overflow-hidden">
-                  {banner.image ? <img src={assetUrl(banner.image)} alt={banner.title} className="w-full h-full object-cover" /> : <div className="absolute inset-0 grid place-items-center text-zinc-400">Nenhuma imagem</div>}
-                  <div className="absolute inset-0 bg-black/35 flex items-center justify-center text-center px-5">
-                    <div className="text-white">
-                      <p className="text-2xl sm:text-3xl font-black tracking-[5px]">{banner.title}</p>
-                      <p className="text-sm mt-2 text-white/85">{banner.subtitle}</p>
+              <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-6">
+                <div>
+                  <div className="relative aspect-[16/7] bg-zinc-200 rounded-2xl overflow-hidden">
+                    {previewImage ? <img src={previewImage} alt={banner.title} className="w-full h-full object-cover" /> : <div className="absolute inset-0 grid place-items-center text-zinc-400">Nenhuma imagem</div>}
+                    <div className="absolute inset-0 bg-black/35 flex items-center justify-center text-center px-5">
+                      <div className="text-white">
+                        <p className="text-2xl sm:text-3xl font-black tracking-[5px]">{banner.title}</p>
+                        <p className="text-sm mt-2 text-white/85">{banner.subtitle}</p>
+                      </div>
                     </div>
                   </div>
+                  <label className={`mt-3 w-full border border-dashed border-zinc-300 rounded-xl h-12 flex items-center justify-center gap-2 font-semibold text-sm ${token && !busy ? "cursor-pointer hover:border-black" : "opacity-40 cursor-not-allowed"}`}>
+                    <ImagePlus size={19} /> Trocar imagem
+                    <input type="file" accept="image/*" disabled={!token || busy} onChange={(event) => uploadImage(index, event.target.files?.[0])} className="hidden" />
+                  </label>
+                  <p className="text-xs text-zinc-400 mt-2">O nome do arquivo não importa. JPG, PNG e WEBP são aceitos e o painel renomeia a imagem automaticamente.</p>
                 </div>
-                <label className={`mt-3 w-full border border-dashed border-zinc-300 rounded-xl h-12 flex items-center justify-center gap-2 font-semibold text-sm ${token && !busy ? "cursor-pointer hover:border-black" : "opacity-40 cursor-not-allowed"}`}>
-                  <ImagePlus size={19} /> Trocar imagem
-                  <input type="file" accept="image/*" disabled={!token || busy} onChange={(event) => uploadImage(index, event.target.files?.[0])} className="hidden" />
-                </label>
-              </div>
 
-              <div className="space-y-4">
-                <label className="block"><span className="text-sm font-semibold">Título</span><input value={banner.title || ""} onChange={(event) => updateBanner(index, "title", event.target.value)} className="mt-2 w-full border rounded-xl px-4 h-11 outline-none focus:border-black" /></label>
-                <label className="block"><span className="text-sm font-semibold">Descrição</span><textarea value={banner.subtitle || ""} onChange={(event) => updateBanner(index, "subtitle", event.target.value)} rows="4" className="mt-2 w-full border rounded-xl px-4 py-3 outline-none focus:border-black resize-none" /></label>
-                <label className="block"><span className="text-sm font-semibold">Texto do botão</span><input value={banner.buttonText || ""} onChange={(event) => updateBanner(index, "buttonText", event.target.value)} className="mt-2 w-full border rounded-xl px-4 h-11 outline-none focus:border-black" /></label>
-                <div className="rounded-xl bg-zinc-100 p-4 text-xs text-zinc-500">O botão continua levando para a seção de produtos. A ordem dos cards acima é a ordem do carrossel.</div>
+                <div className="space-y-4">
+                  <label className="block"><span className="text-sm font-semibold">Título</span><input value={banner.title || ""} onChange={(event) => updateBanner(index, "title", event.target.value)} className="mt-2 w-full border rounded-xl px-4 h-11 outline-none focus:border-black" /></label>
+                  <label className="block"><span className="text-sm font-semibold">Descrição</span><textarea value={banner.subtitle || ""} onChange={(event) => updateBanner(index, "subtitle", event.target.value)} rows="4" className="mt-2 w-full border rounded-xl px-4 py-3 outline-none focus:border-black resize-none" /></label>
+                  <label className="block"><span className="text-sm font-semibold">Texto do botão</span><input value={banner.buttonText || ""} onChange={(event) => updateBanner(index, "buttonText", event.target.value)} className="mt-2 w-full border rounded-xl px-4 h-11 outline-none focus:border-black" /></label>
+                  <div className="rounded-xl bg-zinc-100 p-4 text-xs text-zinc-500">O botão continua levando para a seção de produtos. A ordem dos cards acima é a ordem do carrossel.</div>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
       {banners.length > 0 && <div className="mt-6 flex justify-end"><button disabled={!dirty || busy || !token} onClick={publish} className="bg-black text-white rounded-xl px-6 h-12 font-bold flex items-center justify-center gap-2 disabled:bg-zinc-300 disabled:text-zinc-500"><Save size={19} /> Publicar banners</button></div>}
