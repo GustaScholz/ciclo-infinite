@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Search, Heart, ShoppingBag } from "lucide-react";
+import { Menu, Search, ShoppingBag } from "lucide-react";
 
 import Sidebar from "./Sidebar";
 import SearchModal from "./SearchModal";
@@ -13,16 +13,15 @@ function Navbar({ onLogoClick, onCategorySelect, onSearchSubmit }) {
   return (
     <>
       <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-30">
-        <div className="mx-auto max-w-7xl h-16 flex items-center justify-between px-5">
-          <button onClick={() => setMenuOpen(true)} className="flex items-center gap-2 font-semibold hover:opacity-60 transition">
+        <div className="site-container h-16 flex items-center justify-between gap-4 relative">
+          <button onClick={() => setMenuOpen(true)} className="flex items-center gap-2 font-semibold hover:opacity-60 transition" aria-label="Abrir menu">
             <Menu size={24} strokeWidth={2} />
-            <span className="text-sm">MENU</span>
+            <span className="text-sm hidden sm:inline">MENU</span>
           </button>
-          <button onClick={onLogoClick} className="text-xl font-black tracking-[6px] hover:opacity-60 transition">CICLO</button>
-          <div className="flex items-center gap-5">
-            <button onClick={() => setSearchOpen(true)} className="hover:opacity-60 transition" title="Pesquisar"><Search size={23} strokeWidth={2} /></button>
-            <button className="hover:opacity-60 transition" title="Favoritos"><Heart size={23} strokeWidth={2} /></button>
-            <button onClick={() => setCartOpen(true)} className="relative hover:opacity-60 transition" title="Carrinho">
+          <button onClick={onLogoClick} className="text-xl font-black tracking-[6px] hover:opacity-60 transition absolute left-1/2 -translate-x-1/2">CICLO</button>
+          <div className="flex items-center gap-4 sm:gap-5 ml-auto">
+            <button onClick={() => setSearchOpen(true)} className="hover:opacity-60 transition" title="Pesquisar" aria-label="Pesquisar"><Search size={23} strokeWidth={2} /></button>
+            <button onClick={() => setCartOpen(true)} className="relative hover:opacity-60 transition" title="Carrinho" aria-label="Abrir carrinho">
               <ShoppingBag size={23} strokeWidth={2} />
               {cartCount > 0 && <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>}
             </button>
