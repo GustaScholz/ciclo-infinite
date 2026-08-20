@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "image": "images/banners/banner-1-small.webp",
+    "title": "CICLO",
+    "subtitle": "Streetwear • Underground • Lifestyle",
+    "buttonText": "VER COLEÇÃO"
+  },
+  {
+    "id": 2,
+    "image": "images/banners/banner-2-small.webp",
+    "title": "NOVA COLEÇÃO",
+    "subtitle": "Peças selecionadas para o seu estilo",
+    "buttonText": "CONFERIR"
+  },
+  {
+    "id": 3,
+    "image": "images/banners/banner-3-small.webp",
+    "title": "LANÇAMENTOS",
+    "subtitle": "Novidades chegando na loja",
+    "buttonText": "VER NOVIDADES"
+  }
+]
