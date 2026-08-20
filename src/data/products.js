@@ -1,0 +1,16 @@
+const products = [
+  { id: 1, name: "Camiseta Oversized Preta", price: 89.9, category: "Camisetas", isNew: true, images: ["images/camiseta-preta-frente.jpg", "images/camiseta-preta-costas.jpg", "images/camiseta-preta-detalhe.jpg"], sizes: ["P", "M", "G", "GG"], description: "Camiseta oversized premium com modelagem streetwear." },
+  { id: 2, name: "Camiseta Oversized Branca", price: 89.9, category: "Camisetas", isNew: true, images: ["images/camiseta-preta-frente.jpg", "images/camiseta-preta-costas.jpg", "images/camiseta-preta-detalhe.jpg"], sizes: ["P", "M", "G", "GG"], description: "Peça básica premium para compor qualquer look." },
+  { id: 3, name: "Bermuda Cargo Preta", price: 129.9, category: "Bermudas", isNew: true, images: ["images/camiseta-preta-frente.jpg", "images/camiseta-preta-costas.jpg", "images/camiseta-preta-detalhe.jpg"], sizes: ["P", "M", "G", "GG"], description: "Bermuda cargo com pegada urbana e confortável." },
+  { id: 4, name: "Calça Cargo Bege", price: 179.9, category: "Calças", isNew: true, images: ["images/camiseta-preta-frente.jpg", "images/camiseta-preta-costas.jpg", "images/camiseta-preta-detalhe.jpg"], sizes: ["P", "M", "G", "GG"], description: "Calça cargo streetwear com bolsos laterais." },
+  { id: 5, name: "Boné Classic Preto", price: 69.9, category: "Acessórios", isNew: true, images: ["images/camiseta-preta-frente.jpg", "images/camiseta-preta-costas.jpg", "images/camiseta-preta-detalhe.jpg"], sizes: ["Único"], description: "Boné preto clássico para completar o visual." },
+  { id: 6, name: "Jaqueta Windbreaker", price: 219.9, category: "Jaquetas", isNew: true, image: "images/jaqueta.jpg", sizes: ["P", "M", "G", "GG"], description: "Jaqueta leve com visual urbano." },
+  { id: 7, name: "Moletom Basic Preto", price: 199.9, category: "Blusas", isNew: true, image: "images/moletom-preto.jpg", sizes: ["P", "M", "G", "GG"], description: "Moletom confortável com visual minimalista." },
+  { id: 8, name: "Camiseta Estampada", price: 99.9, category: "Camisetas", isNew: true, image: "images/camiseta-estampada.jpg", sizes: ["P", "M", "G", "GG"], description: "Camiseta com estampa exclusiva da coleção." },
+  { id: 9, name: "Bermuda Moletom Cinza", price: 109.9, category: "Bermudas", isNew: true, image: "images/bermuda-moletom.jpg", sizes: ["P", "M", "G", "GG"], description: "Bermuda confortável para uso casual." },
+  { id: 10, name: "Shoulder Bag Preta", price: 79.9, category: "Acessórios", isNew: true, image: "images/shoulder-bag.jpg", sizes: ["Único"], description: "Shoulder bag preta para compor looks streetwear." },
+  { id: 11, name: "Shoulder Bag Preta", price: 79.9, category: "Acessórios", isNew: true, image: "images/shoulder-bag.jpg", sizes: ["Único"], description: "Shoulder bag preta para compor looks streetwear." },
+  { id: 12, name: "Shoulder Bag Preta", price: 79.9, category: "Acessórios", isNew: true, image: "images/shoulder-bag.jpg", sizes: ["Único"], description: "Shoulder bag preta para compor looks streetwear." }
+];
+
+export default products;
