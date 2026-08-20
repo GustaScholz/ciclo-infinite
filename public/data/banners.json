@@ -1,21 +1,21 @@
 [
   {
     "id": 1,
-    "image": "images/banners/banner-1-small.webp",
+    "image": "images/banners-admin/1787244275964-ciclo-2.png",
     "title": "CICLO",
     "subtitle": "Streetwear • Underground • Lifestyle",
     "buttonText": "VER COLEÇÃO"
   },
   {
     "id": 2,
-    "image": "images/banners/banner-2-small.webp",
+    "image": "images/banners-admin/1787244285375-ciclo-3.png",
     "title": "NOVA COLEÇÃO",
     "subtitle": "Peças selecionadas para o seu estilo",
     "buttonText": "CONFERIR"
   },
   {
     "id": 3,
-    "image": "images/banners/banner-3-small.webp",
+    "image": "images/banners-admin/1787244264139-ciclo-1.png",
     "title": "LANÇAMENTOS",
     "subtitle": "Novidades chegando na loja",
     "buttonText": "VER NOVIDADES"
